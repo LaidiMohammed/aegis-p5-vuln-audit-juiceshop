@@ -1,2 +1,2 @@
 $py = if (Test-Path .venv/bin/python) { '.venv/bin/python' } else { 'python' }
-& $py "src\vuln-audit-juiceshop_main.py"
+& $py "src\vuln_audit_juiceshop_main.py"
