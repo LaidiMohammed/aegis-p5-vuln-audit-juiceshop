@@ -1,0 +1,38 @@
+@import url("https://fonts.googleapis.com/css2?family=Share+Tech+Mono&family=Chakra+Petch:wght@400;600;700&display=swap");
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+:root{--void:#050a08;--neon:#39ff9e;--amber:#ffb020;}
+*{box-sizing:border-box;}
+html{scroll-behavior:smooth;}
+body{margin:0;background:var(--void);color:#c8ffe4;font-family:"Share Tech Mono",Consolas,monospace;}
+
+/* scan grid */
+.scan-grid{background-image:linear-gradient(rgba(57,255,158,.05) 1px,transparent 1px),linear-gradient(90deg,rgba(57,255,158,.05) 1px,transparent 1px);background-size:36px 36px;}
+
+/* radar sweep */
+.radar{position:relative;border-radius:50%;border:1px solid rgba(57,255,158,.3);overflow:hidden;}
+.radar::after{content:"";position:absolute;inset:0;border-radius:50%;background:conic-gradient(from 0deg,rgba(57,255,158,.35),transparent 25%);animation:sweep 3.6s linear infinite;}
+@keyframes sweep{to{transform:rotate(360deg);}}
+.radar .ring{position:absolute;border:1px solid rgba(57,255,158,.18);border-radius:50%;top:50%;left:50%;transform:translate(-50%,-50%);}
+
+/* glow text */
+.glow{text-shadow:0 0 12px rgba(57,255,158,.55);}
+
+/* terminal panel */
+.term{border:1px solid rgba(57,255,158,.25);background:rgba(10,20,16,.75);}
+
+/* reveal */
+.reveal{opacity:0;transform:translateY(16px);transition:opacity .6s ease,transform .6s ease;}
+.reveal.in{opacity:1;transform:none;}
+
+/* blink */
+.blink{animation:blink 1s steps(1) infinite;}
+@keyframes blink{50%{opacity:0;}}
+
+.coord{font-family:"Share Tech Mono",monospace;font-size:.7rem;letter-spacing:.16em;text-transform:uppercase;}
+::selection{background:var(--neon);color:var(--void);}
+::-webkit-scrollbar{width:9px;}
+::-webkit-scrollbar-track{background:var(--void);}
+::-webkit-scrollbar-thumb{background:#134e39;border:2px solid var(--void);}
+::-webkit-scrollbar-thumb:hover{background:var(--neon);}
