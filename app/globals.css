@@ -1,11 +1,10 @@
-@import url("https://fonts.googleapis.com/css2?family=Share+Tech+Mono&family=Chakra+Petch:wght@400;600;700&display=swap");
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
 :root{--void:#050a08;--neon:#39ff9e;--amber:#ffb020;}
 *{box-sizing:border-box;}
 html{scroll-behavior:smooth;}
-body{margin:0;background:var(--void);color:#c8ffe4;font-family:"Share Tech Mono",Consolas,monospace;}
+body{margin:0;background:var(--void);color:#c8ffe4;font-family:var(--font-mono),Consolas,monospace;}
 
 /* scan grid */
 .scan-grid{background-image:linear-gradient(rgba(57,255,158,.05) 1px,transparent 1px),linear-gradient(90deg,rgba(57,255,158,.05) 1px,transparent 1px);background-size:36px 36px;}
@@ -30,9 +29,19 @@ body{margin:0;background:var(--void);color:#c8ffe4;font-family:"Share Tech Mono"
 .blink{animation:blink 1s steps(1) infinite;}
 @keyframes blink{50%{opacity:0;}}
 
-.coord{font-family:"Share Tech Mono",monospace;font-size:.7rem;letter-spacing:.16em;text-transform:uppercase;}
+.coord{font-family:var(--font-mono),monospace;font-size:.7rem;letter-spacing:.16em;text-transform:uppercase;}
 ::selection{background:var(--neon);color:var(--void);}
 ::-webkit-scrollbar{width:9px;}
 ::-webkit-scrollbar-track{background:var(--void);}
 ::-webkit-scrollbar-thumb{background:#134e39;border:2px solid var(--void);}
 ::-webkit-scrollbar-thumb:hover{background:var(--neon);}
+
+/* Accessibility: respect reduced motion */
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+}

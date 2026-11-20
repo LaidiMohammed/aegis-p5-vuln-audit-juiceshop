@@ -1,5 +1,5 @@
 "use client";
-import { useState } from "react";
+import { useEffect, useRef, useState } from "react";
 
 const SERVICES = [
   { port: "21", svc: "ftp", product: "vsftpd 2.3.4", cve: "CVE-2011-2523" },
@@ -11,10 +11,14 @@ const SERVICES = [
 export default function ScanConsole() {
   const [phase, setPhase] = useState<"idle"|"scan"|"done">("idle");
   const [rows, setRows] = useState(0);
+  const timers = useRef<number[]>([]);
+  useEffect(() => () => { timers.current.forEach((x) => clearTimeout(x)); timers.current = []; }, []);
+  const pushTimer = (fn: () => void, ms: number) => { timers.current.push(window.setTimeout(fn, ms)); };
+
   function run() {
     setPhase("scan"); setRows(0);
-    SERVICES.forEach((_,i)=>window.setTimeout(()=>setRows(i+1), 420*(i+1)));
-    window.setTimeout(()=>setPhase("done"), 420*SERVICES.length+300);
+    SERVICES.forEach((_,i)=>pushTimer(()=>setRows(i+1), 420*(i+1)));
+    pushTimer(()=>setPhase("done"), 420*SERVICES.length+300);
   }
   return (
     <div className="term p-5">
