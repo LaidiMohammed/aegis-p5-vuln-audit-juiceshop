@@ -1,34 +1,39 @@
-# AEGIS — P5 — Audit de vulnérabilités web (Juice Shop/DVWA)
+# AEGIS — P5 — Vuln audit (Juice Shop)
 
-[![Vercel](https://img.shields.io/badge/Vercel-aegis-p5--blue?logo=vercel)](https://aegis-p5-vuln-audit-juiceshop.vercel.app)
-[![Tests](https://img.shields.io/badge/Tests-passing-brightgreen)]
+P5 — **Audit de vulnérabilités web local (Juice Shop/DVWA)** (PFE P13 style AEGIS).
 
-Audit de vulnérabilités web (Juice Shop/DVWA) — PFE P13 style AEGIS (Master 1 Sécurité informatique).
+## Objectif
 
-## Infos rapides
+Scan de vulnérabilités web local (Juice Shop/DVWA) via Nmap (production nul, automatique avec `--mock-audit` en attente de nmap sur la VM locale).
 
-| Élément | Valeur |
-|---|---|
-| **GitHub** | https://github.com/LaidiMohammed/aegis-p5-vuln-audit-juiceshop |
-| **Vercel** | https://aegis-p5-vuln-audit-juiceshop.vercel.app |
-| **Stacks** | nmap, python-nmap, NVD API, reportlab |
-| **Type** | pen |
-| **Ethique** | Labo local, anti-GPU, anti-cloud, stand-alone |
+## Architecture
 
-## Install
-
-```bash
-pip install -r requirements.txt
-make install  # (venv)
+```
+AEGIS P5 (vuln_audit_juiceshop)
+├── src/
+│   ├── vuln_audit_juiceshop_main.py  # CLI — nmap_scan_target / parse_nmap_xml / nvd_cves_by_keyword / run_audit / main
+│   └── generate_report.py            # PDF via reportlab
+└── tests/
+    └── test_vuln_audit.py            # 6 tests mocks — pass
 ```
 
-## Smoke & tests (démo à la prof)
+## Fonctions à exécuter — démo à la prof
 
 ```bash
-make smoke   # ou: scripts/run_smoke.sh
-make test
+python -m src.vuln_audit_juiceshop_main --target 127.0.0.1 --save-json outputs/results.json --pdf outputs/rapport-p5.pdf
+python -m src.vuln_audit_juiceshop_main --mock-audit --save-json outputs/results_mock.json --pdf outputs/rapport-p5-mock.pdf
 ```
 
-## Fonctions à exécuter à la démo
+- Nmap — CLI réel (surl, PDF : services + CVEs NVD) — voir PDF.
 
-Voir [`docs/ETHICS.md`](docs/ETHICS.md), [`docs/SPEC.md`](docs/SPEC.md).
+## Sites
+
+- **GitHub** : https://github.com/LaidiMohammed/aegis-p5-vuln-audit-juiceshop
+- **Vercel** : https://aegis-p5-vuln-audit-juiceshop.vercel.app
+
+## Notes
+
+- Nmap absente (ici, pas internet) — le smoke fonctionne en mock — voir `--mock-audit`.
+-Smoke : `python -m src.vuln_audit_juiceshop_main --mock-audit`.
+
+See `docs/ETHICS.md`.
