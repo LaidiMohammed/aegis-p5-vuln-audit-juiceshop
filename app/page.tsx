@@ -1,4 +1,4 @@
-import Console from "@/components/Console";
+import ScanConsole from "@/components/ScanConsole";
 import Reveal from "@/components/Reveal";
 
 const FUNCS = [
@@ -27,7 +27,7 @@ export default function Page() {
           <Reveal delay={210}><div className="mt-8 flex flex-wrap gap-3"><a href="#scan" className="border border-neon bg-neon px-6 py-3 font-mono text-xs font-bold uppercase tracking-widest text-void hover:bg-white">Lancer le scan ↓</a><a href="#fonctions" className="border border-neon/40 px-6 py-3 font-mono text-xs uppercase tracking-widest text-neon hover:bg-neon/10">Les fonctions</a></div></Reveal>
           <Reveal delay={280}><div className="mt-10 grid grid-cols-4 gap-4 border-t border-neon/20 pt-6">{[["04","services"],["04","CVEs"],["06","tests mocks"],["00","prod"]].map(([n,l])=><div key={l}><div className="font-display text-2xl font-bold glow">{n}</div><div className="coord text-neon/40">{l}</div></div>)}</div></Reveal>
         </div>
-        <Reveal delay={120}><Console /></Reveal>
+        <Reveal delay={120}><ScanConsole /></Reveal>
       </section>
 
       <section id="scan" className="mx-auto max-w-7xl px-5 py-14">
@@ -58,3 +58,4 @@ export default function Page() {
     </main>
   );
 }
+

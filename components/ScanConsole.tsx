@@ -1,53 +1,129 @@
 "use client";
-import { useEffect, useRef, useState } from "react";
+import { useState } from "react";
 
-const SERVICES = [
-  { port: "21", svc: "ftp", product: "vsftpd 2.3.4", cve: "CVE-2011-2523" },
-  { port: "22", svc: "ssh", product: "OpenSSH 4.7p1", cve: "CVE-2008-0166" },
-  { port: "80", svc: "http", product: "Apache httpd 2.2.8", cve: "CVE-2021-41773" },
-  { port: "445", svc: "smb", product: "Samba 3.0.20", cve: "CVE-2007-2447" },
+interface PortResult { port: number; open: boolean; service: string; banner: string; product: string; version: string; response_ms: number; }
+interface Report {
+  project: string; target: string; scanned_at: string; method: string;
+  summary: { ports_scanned: number; open_ports: number; closed_ports: number; cves_found: number };
+  results: PortResult[];
+  cves: Array<{ port: number; service: string; cve: string; cvss: number; severity: string; note: string }>;
+}
+
+const COMMON = [
+  { port: 21, label: "FTP" }, { port: 22, label: "SSH" }, { port: 53, label: "DNS" },
+  { port: 80, label: "HTTP" }, { port: 110, label: "POP3" }, { port: 143, label: "IMAP" },
+  { port: 443, label: "HTTPS" }, { port: 445, label: "SMB" }, { port: 3306, label: "MySQL" },
+  { port: 3389, label: "RDP" }, { port: 5432, label: "PostgreSQL" }, { port: 6379, label: "Redis" },
+  { port: 8080, label: "HTTP-alt" }, { port: 27017, label: "MongoDB" },
 ];
 
 export default function ScanConsole() {
-  const [phase, setPhase] = useState<"idle"|"scan"|"done">("idle");
-  const [rows, setRows] = useState(0);
-  const timers = useRef<number[]>([]);
-  useEffect(() => () => { timers.current.forEach((x) => clearTimeout(x)); timers.current = []; }, []);
-  const pushTimer = (fn: () => void, ms: number) => { timers.current.push(window.setTimeout(fn, ms)); };
+  const [host, setHost] = useState("example.com");
+  const [ports, setPorts] = useState<number[]>([21, 22, 80, 443, 445, 3306, 8080]);
+  const [report, setReport] = useState<Report | null>(null);
+  const [loading, setLoading] = useState(false);
 
-  function run() {
-    setPhase("scan"); setRows(0);
-    SERVICES.forEach((_,i)=>pushTimer(()=>setRows(i+1), 420*(i+1)));
-    pushTimer(()=>setPhase("done"), 420*SERVICES.length+300);
+  function toggle(port: number) {
+    setPorts((p) => (p.includes(port) ? p.filter((x) => x !== port) : [...p, port]));
   }
+
+  async function launch() {
+    if (!host.trim()) return;
+    setLoading(true); setReport(null);
+    try {
+      const res = await fetch("/api/scan", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ host: host.trim(), ports }),
+      });
+      setReport(await res.json());
+    } catch { setReport(null); }
+    finally { setLoading(false); }
+  }
+
   return (
-    <div className="term p-5">
-      <div className="flex items-center justify-between border-b border-neon/20 pb-3">
-        <span className="coord glow text-neon">nmap -sV -p- 127.0.0.1</span>
-        <span className="coord text-neon/50">{phase === "idle" ? "READY" : phase === "scan" ? "SCANNING" : "COMPLETE"}</span>
-      </div>
-      <div className="mt-4 flex flex-wrap items-center gap-6">
-        <div className="radar h-40 w-40 shrink-0">
-          <div className="ring" style={{width:"70%",height:"70%"}} />
-          <div className="ring" style={{width:"40%",height:"40%"}} />
-          <div className="absolute left-1/2 top-1/2 h-2 w-2 -translate-x-1/2 -translate-y-1/2 rounded-full bg-neon glow" />
+    <div className="bracket cut-card scanlines overflow-hidden">
+      <div className="flex items-center justify-between border-b border-slate-700/50 px-4 py-3">
+        <div className="flex items-center gap-2">
+          <span className="h-2.5 w-2.5 rounded-full bg-signal" />
+          <span className="h-2.5 w-2.5 rounded-full bg-amber" />
+          <span className="h-2.5 w-2.5 rounded-full bg-cyan" />
+          <span className="ml-3 font-mono text-xs text-mist">POST /api/scan — scan TCP réel</span>
         </div>
-        <div className="min-w-[200px] flex-1 font-mono text-xs">
-          <div className="text-neon/60">$ python -m src.vuln_audit_juiceshop_main --mock-audit</div>
-          <div className="mt-2 space-y-1">
-            {SERVICES.slice(0,rows).map(s=>(
-              <div key={s.port} className="flex gap-2 text-neon/80"><span className="text-amber">{s.port}/tcp</span><span>{s.svc}</span><span className="text-neon/50">{s.product}</span></div>
-            ))}
+        <span className="tag text-slate-500">node:net</span>
+      </div>
+
+      <div className="p-5">
+        <label className="tag mb-2 block text-cyan">Cible (hôte)</label>
+        <input
+          value={host}
+          onChange={(e) => setHost(e.target.value)}
+          placeholder="ex. example.com"
+          className="w-full border border-slate-700 bg-black/40 p-3 font-mono text-[12px] text-slate-200 outline-none focus:border-cyan"
+        />
+
+        <label className="tag mb-2 mt-4 block text-cyan">Ports à scanner</label>
+        <div className="flex flex-wrap gap-1.5">
+          {COMMON.map((c) => (
+            <button
+              key={c.port}
+              onClick={() => toggle(c.port)}
+              className={`border px-2 py-1 font-mono text-[10px] transition ${
+                ports.includes(c.port)
+                  ? "border-cyan bg-cyan/15 text-cyan"
+                  : "border-slate-700 text-slate-500 hover:border-slate-500"
+              }`}
+            >
+              {c.port}
+            </button>
+          ))}
+        </div>
+
+        <button
+          onClick={launch}
+          disabled={loading || !host.trim()}
+          className="mt-5 w-full bg-signal px-5 py-3 font-mono text-xs font-bold uppercase tracking-widest text-white transition hover:bg-white hover:text-ink disabled:opacity-50"
+          style={{ clipPath: "polygon(0 0, calc(100% - 10px) 0, 100% 10px, 100% 100%, 10px 100%, 0 calc(100% - 10px))" }}
+        >
+          {loading ? "Scan en cours…" : "▶ Lancer le scan réel"}
+        </button>
+
+        <p className="mt-2 text-center text-[10px] text-slate-600">
+          Éthique : ne scannez que des cibles que vous possédez ou avez autorisation écrite.
+        </p>
+
+        {report && (
+          <div className="mt-5 border-t border-slate-700/50 pt-4">
+            <div className="mb-3 font-mono text-sm text-slate-300">
+              [SUMMARY] {report.target} — {report.summary.open_ports}/{report.summary.ports_scanned} ouverts · {report.summary.cves_found} CVE
+            </div>
+            <div className="space-y-1">
+              {report.results.map((r) => (
+                <div key={r.port} className={`flex flex-wrap items-center gap-x-3 gap-y-1 border-l-2 px-3 py-1.5 font-mono text-[11px] ${r.open ? "border-emerald-400 bg-emerald-500/5" : "border-slate-700 bg-white/[.02]"}`}>
+                  <span className={r.open ? "text-emerald-400" : "text-slate-600"}>{r.port}</span>
+                  <span className="text-slate-400">{r.service}</span>
+                  <span className={r.open ? "text-emerald-300" : "text-slate-600"}>{r.open ? "OPEN" : "closed"}</span>
+                  {r.banner && <span className="text-amber">"{r.banner}"</span>}
+                  <span className="text-slate-600">{r.response_ms}ms</span>
+                </div>
+              ))}
+            </div>
+            {report.cves.length > 0 && (
+              <div className="mt-4 space-y-1">
+                {report.cves.map((c) => (
+                  <div key={c.cve} className="flex flex-wrap items-center gap-x-3 gap-y-1 border-l-2 border-signal bg-signal/5 px-3 py-1.5 font-mono text-[11px]">
+                    <span className="text-signal">{c.cve}</span>
+                    <span className="text-amber">CVSS {c.cvss}</span>
+                    <span className="text-slate-400">{c.service}</span>
+                    <span className="text-slate-500">{c.note}</span>
+                  </div>
+                ))}
+              </div>
+            )}
+            <div className="mt-3 font-mono text-[10px] text-slate-600">{report.method}</div>
           </div>
-          {phase === "idle" && <div className="mt-3 text-neon/40">En attente...<span className="blink">_</span></div>}
-          {phase === "scan" && <div className="mt-3 text-amber">analyse en cours<span className="blink">_</span></div>}
-          {phase === "done" && <div className="mt-3 border-t border-neon/20 pt-2 text-neon glow">[SUMMARY] services=4 cves=4 · severities=&#123;HIGH:4&#125;</div>}
-        </div>
+        )}
       </div>
-      <button onClick={run} disabled={phase==="scan"} className="mt-5 w-full border border-neon bg-neon/10 px-5 py-2.5 font-mono text-xs font-bold uppercase tracking-widest text-neon transition hover:bg-neon hover:text-void disabled:opacity-50">
-        {phase==="scan"?"Scan en cours...":phase==="done"?"↺ Relancer le scan":"▶ Lancer le scan (mock)"}
-      </button>
-      <p className="mt-2 text-center text-[10px] text-neon/40">sortie mock · nmap réel sur VM locale uniquement</p>
     </div>
   );
 }
