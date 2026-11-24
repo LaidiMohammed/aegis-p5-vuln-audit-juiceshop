@@ -1,4 +1,5 @@
 import ScanConsole from "@/components/ScanConsole";
+import LiveDemo from "@/components/LiveDemo";
 import Reveal from "@/components/Reveal";
 
 const FUNCS = [
@@ -38,10 +39,8 @@ export default function Page() {
       </section>
 
       <section id="demo" className="mx-auto max-w-7xl px-5 py-14">
-        <Reveal><span className="coord text-neon">02 / Démonstration</span><h2 className="mt-2 font-display text-4xl font-bold sm:text-5xl">Commandes</h2></Reveal>
-        <div className="mt-8 space-y-2 rounded border border-neon/20 bg-panel/60 p-5 text-xs">
-          {["python -m src.vuln_audit_juiceshop_main --target 127.0.0.1 --save-json outputs/results.json --pdf outputs/rapport-p5.pdf","python -m src.vuln_audit_juiceshop_main --mock-audit --save-json outputs/results_mock.json --pdf outputs/rapport-p5-mock.pdf"].map(c=><div key={c} className="term px-4 py-3 text-neon"><span className="text-amber">$</span> {c}</div>)}
-        </div>
+        <Reveal><span className="coord text-neon">02 / Démonstration</span><h2 className="mt-2 font-display text-4xl font-bold sm:text-5xl">Résultats live</h2></Reveal>
+        <div className="mt-8 max-w-3xl"><LiveDemo /></div>
       </section>
 
       <section id="ethique" className="mx-auto max-w-7xl px-5 py-14">
