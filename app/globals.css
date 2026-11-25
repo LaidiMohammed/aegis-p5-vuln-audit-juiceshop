@@ -1,7 +1,7 @@
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
-:root{--void:#050a08;--neon:#39ff9e;--amber:#ffb020;}
+:root{--void:#050a08;--neon:#39ff9e;--amber:#ffb020;--font-mono:var(--font-geist-mono);--font-display:var(--font-geist-sans);}
 *{box-sizing:border-box;}
 html{scroll-behavior:smooth;}
 body{margin:0;background:var(--void);color:#c8ffe4;font-family:var(--font-mono),Consolas,monospace;}
@@ -45,3 +45,22 @@ body{margin:0;background:var(--void);color:#c8ffe4;font-family:var(--font-mono),
     scroll-behavior: auto !important;
   }
 }
+
+/* Named text styles (skill landing-page-design B1) */
+.heading-1 { @apply text-6xl font-semibold leading-none text-balance; }
+.heading-2 { @apply text-5xl font-semibold leading-none text-balance; }
+.heading-3 { @apply text-4xl font-semibold text-balance; }
+.heading-4 { @apply text-3xl font-semibold text-balance; }
+.title-1 { @apply text-xl font-medium; }
+.title-2 { @apply text-lg font-medium; }
+.title-3 { @apply text-base font-medium; }
+.body-1 { @apply text-base font-semibold; }
+.body-2 { @apply text-base font-medium; }
+.body-3 { @apply text-base font-normal text-pretty; }
+.body-6 { @apply text-sm font-normal text-pretty; }
+.button-md { @apply text-base font-semibold; }
+.button-sm { @apply text-sm font-semibold; }
+.caption-2 { @apply text-sm font-normal; }
+.caption-5 { @apply text-xs font-normal; }
+.mono-data { font-family: var(--font-geist-mono), ui-monospace, monospace; }
+.hero-gradient { background: linear-gradient(90deg, #FFFFFF 0%, #9B9B9B 100%); -webkit-background-clip: text; background-clip: text; color: transparent; }
