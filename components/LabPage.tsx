@@ -167,8 +167,8 @@ export default function LabPage() {
         <h2 className="heading-3 mt-4 max-w-[680px]">
           {TAGLINE.map((word, index) => (
             <span key={index} ref={(element) => { wordRefs.current[index] = element; }} data-index={index}
-              className={`mr-2 transition-opacity duration-500 ease-[cubic-bezier(0.22,1,0.36,1)] ${activeWords.has(index) ? "opacity-100" : "opacity-30"}`}>
-              {word}
+              className={`transition-opacity duration-500 ease-[cubic-bezier(0.22,1,0.36,1)] ${activeWords.has(index) ? "opacity-100" : "opacity-30"}`}>
+              {word}{" "}
             </span>
           ))}
         </h2>

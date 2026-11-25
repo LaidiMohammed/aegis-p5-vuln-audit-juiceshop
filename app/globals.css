@@ -4,7 +4,7 @@
 :root{--void:#050a08;--neon:#39ff9e;--amber:#ffb020;--font-mono:var(--font-geist-mono);--font-display:var(--font-geist-sans);}
 *{box-sizing:border-box;}
 html{scroll-behavior:smooth;}
-body{margin:0;background:var(--void);color:#c8ffe4;font-family:var(--font-mono),Consolas,monospace;}
+body{margin:0;background:var(--void);color:#c8ffe4;font-family:var(--font-display),Geist,sans-serif;}
 
 /* scan grid */
 .scan-grid{background-image:linear-gradient(rgba(57,255,158,.05) 1px,transparent 1px),linear-gradient(90deg,rgba(57,255,158,.05) 1px,transparent 1px);background-size:36px 36px;}
